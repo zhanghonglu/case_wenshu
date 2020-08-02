@@ -99,7 +99,7 @@ class ResultHeader(ResultItem):
 
 class LargeTablePaginator(Paginator):
     def _get_count(self):
-        return 80000000000
+        return 8800310
 
     count = property(_get_count)
 class ListAdminView(ModelAdminView):
