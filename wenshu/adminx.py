@@ -21,7 +21,7 @@ class case_infoAdmin(object):
     #         return [law.law_item for law in obj.apply_law.all()]
     #     else :
     #         return None
-    readonly_fields = ['case_no','case_content']
+    readonly_fields = ['case_no',]
 
     form_layout = (
         Main(
@@ -37,13 +37,15 @@ class case_infoAdmin(object):
                      "person_name", "person_type",
                      "person_birthday", "person_sex",
                      "person_job", "person_edu",
-                     "person_nation", "person_address"
+                     "person_nation", "person_address",
+                     "person_age","arrest_date"
                      ),
             Fieldset('判决结果',
                      "result_type", "penalty_name",
                      "penalty_content",
                      "penalty_addition_money",
                      "penalty_addition_politics",
+                     "penalty_compensate_money"
                      ),
         )
         )
