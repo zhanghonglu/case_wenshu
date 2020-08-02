@@ -12,7 +12,7 @@ class case_infoAdmin(object):
 
     class apply_lawsInline(object):
         model = apply_laws
-        extra = 1
+        extra = 0
 
     inlines = [apply_lawsInline]
 
