@@ -13,6 +13,16 @@ class case_infoAdmin(object):
     class apply_lawsInline(object):
         model = apply_laws
         extra = 0
+        exclude = ["case_no"]
+        form_layout = (
+
+            Fieldset(u'法定情节',
+                     Row('law_item', 'law_item_second','law_item_content'),  # Row 表示将里面的字段作为一行显示
+                     ),
+
+
+
+        )
 
     inlines = [apply_lawsInline]
 
