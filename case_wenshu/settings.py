@@ -89,12 +89,20 @@ DATABASES = {
          'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
     },
+'mysql': {
+        'ENGINE': 'django.db.backends.mysql',   # 数据库引擎
+        'NAME': 'case_wenshu',         # 你要存储数据的库名，事先要创建之
+        'USER': 'root',         # 数据库用户名
+        'PASSWORD': 'root',     # 密码
+        'HOST': 'localhost',    # 主机
+        'PORT': '3306',         # 数据库使用的端口
+    }
 }
 DATABASE_ROUTERS = ['case_wenshu.database_router.DatabaseAppsRouter']
 DATABASES_APPS_MAPPING = {
     # example:
     #'app_name':'database_name',
-    'wenshu': 'db1',
+    'wenshu': 'mysql',
     'xadmin':'default',
 }
 
