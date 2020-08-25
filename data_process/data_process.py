@@ -17,7 +17,7 @@ from utils import CN_NUM, chinese_to_arabic,CN_UNIT, get_date,get_month_length,g
 
 def get_residence(content):
     residence = None
-    result = re.search(r'(住|住于|住的|住址)[^\u4e00-\u9fa5]*([\u4e00-\u9fa5]*[省|市|区|县]+[\u4e00-\u9fa5]*)',content)
+    result = re.search(r'(住|住于|住的)[^\u4e00-\u9fa5]*([\u4e00-\u9fa5]*[省|市|区|县]+[\u4e00-\u9fa5]*)',content)
     if result:
         residence = (result.group(2))
     elif re.search(r'(居住地)[^\u4e00-\u9fa5]*([\u4e00-\u9fa5]*[省|市|区|县]+[\u4e00-\u9fa5]*)',content):
@@ -61,8 +61,9 @@ def get_wenshu_type(case_no, content):
     if case_no is None:
         return  None
     else:
+        case_no = str(case_no)
 
-        result = re.search(r'(刑[（知）]*[\u4e00-\u9fa5]*)', case_no)
+        result = re.search(r'(刑[（知）]*[\u4e00-\u9fa5]*)', str(case_no))
         if result:
             wenshu_type = result.group(1)
         elif re.search(r'\d([\u4e00-\u9fa5])\d', case_no):
@@ -317,8 +318,6 @@ def get_penalty_addtion_politics(content):
     return   politics
 
 
-
-
 def get_apply_laws(content):
     laws = []
     result = re.search(r'《中华人民共和国刑法》(.*)?，', content)
@@ -437,32 +436,33 @@ if __name__ =='__main__':
     judge_doc = db_case.judge_doc
     judge_curor = judge_doc.find()
     count = 0
-    isRead = True
+    isRead = False
     for judge_i in judge_curor:
         count = count +1
-        # print(count)
+        print(count)
         case_no = judge_i["case_no"]
-
+        if case_no is None:
+            case_no = count
+        if count >= 653414:
+            isRead = True
         if(isRead):
-            # print(judge_i)
+            print(judge_i)
 
-            # print("写入" + str(case_no))
+            print("写入" + str(case_no))
             case_content = judge_i["content"]
             content = ''
             for i in case_content:
                 content += i["text"]
             content = dehtml(content)  # 判决书正文
             content = content.encode('utf-8', 'ignore').decode("utf-8")
-            case_content = dehtml(case_content)
-            person_info = judge_i["person_info"]#被告人信息
-            print(content)
+            # case_content = dehtml(case_content)
+            # person_info = judge_i["person_info"]#被告人信息
+            # print(content)
             #get_decision_date判决日期 get_arrest_date逮捕日期 get_restricted_date get_restricted_date get_prosecutors_date提起公诉时间
             arrest_date = get_arrest_date(content)
             restricted_date = get_restricted_date(content)
             decision_date = get_decision_date(content)
             prosecutor_date  = get_prosecutors_date(content)
-
-            print("逮捕时间{}取保候审时间{}公诉时间{}判决事件{}".format(arrest_date, restricted_date,prosecutor_date, decision_date))
             person_birthday = get_person_birthday(content)
             age = get_person_age(content)
             if age is None:
@@ -475,36 +475,66 @@ if __name__ =='__main__':
                         age = get_age_data(person_birthday, prosecutor_date)
                     elif decision_date:
                         age = get_age_data(person_birthday ,decision_date)
-            print(age)
-            print(get_residence(content))
-
-            '''
+            residence = get_residence(content)
+            wenshu_type = get_wenshu_type(case_no,content)
             person_name = get_person_name(content)
             person_sex = get_person_sex(content)
             person_type = get_person_type(content)
-            
             person_nation = get_person_nation(content)
             person_job = get_person_job(content)
             person_edu = get_person_edu(content)
             person_address = get_person_address(content)
-            result_type, penalty_name, penalty_content, penalty_addition_money = get_result(case_no, content)
-            arrest_date = get_arrest_date(content)
-            age = get_person_age(content)
+            result_type,penalty_name ,penalty_prison_type,penalty_prison_length = get_result(case_no, content)
+            penalty_addition_money = get_penalty_addtion_money(content)
             compensate_money = get_compensate(content)
             penalty_addtion_politics = get_penalty_addtion_politics(content)
-
-            case_info_item = case_info(case_no=case_no, case_content=content, person_name=person_name,
-                                       person_sex=person_sex,
-                                       person_type=person_type,
-                                       person_birthday=person_birthday, person_nation=person_nation,
-                                       person_job=person_job, person_edu=person_edu,
+            civil_plaintiff = get_civil_plaintiff(content)
+            public_prosecutor = get_public_prosecutor(content)
+            print(person_nation)
+            if(public_prosecutor):
+                if(len(public_prosecutor)>40):
+                    public_prosecutor =None
+            if (person_name):
+                if (len(person_name) > 40):
+                    person_name = None
+            if (residence):
+                if (len(residence) > 40):
+                    residence = None
+            if (person_address):
+                if (len(person_address) > 40):
+                    person_address = None
+            if (civil_plaintiff):
+                if (len(civil_plaintiff) > 40):
+                    civil_plaintiff = None
+            if (person_nation):
+                if (len(person_nation) > 20):
+                    person_nation = None
+            if (case_no):
+                if (len(str(case_no)) > 40):
+                    case_no = None
+            if (wenshu_type):
+                if (len(wenshu_type) > 40):
+                    wenshu_type = None
+            if (person_edu):
+                if (len(person_edu) > 20):
+                    person_edu = None
+            if penalty_addtion_politics:
+                if (len(penalty_addtion_politics) > 50):
+                    penalty_addtion_politics = None
+            if case_no is None:
+                case_no = count
+            case_info_item = case_info(case_no=case_no, case_content=content, person_name=person_name,person_type = person_type,person_nation = person_nation,person_birthday = person_birthday,
+                                      person_age = age,
+                                       person_sex=person_sex,wenshu_type = wenshu_type,
+                                       person_job=person_job,residence = residence, person_edu=person_edu,
                                        person_address=person_address, result_type=result_type,
                                        penalty_name=penalty_name,
-                                       penalty_content=penalty_content, penalty_addition_money=penalty_addition_money,
+                                        penalty_addition_money=penalty_addition_money,
                                        arrest_date=arrest_date, penalty_addition_politics=penalty_addtion_politics,
-                                       person_age=age, penalty_compensate_money=compensate_money
+                                      penalty_compensate_money=compensate_money,penalty_prison_type = penalty_prison_type,penalty_prison_length =penalty_prison_length,
+                                       restricted_date = restricted_date,prosecutors_date = prosecutor_date, decision_date = decision_date,
+                                       civil_plaintiff = civil_plaintiff,public_prosecutor =public_prosecutor
                                        )
-            get_arrest_date(content)
             case_info_item.save()
             laws = get_apply_laws(content)
             for law in laws:
@@ -565,12 +595,7 @@ if __name__ =='__main__':
                     elif law[1] == "第四款":
                         law_content = "紧急避险"
                 apply_law = apply_laws(case=case_info_item, law_item=law[0], law_item_second=law[1],
-                                       law_item_content=law_content, case_no=case_no)
+                                       law_item_content=law_content)
                 apply_law.save()
                 
-
-
-        if count == 5966171:
-            isRead = True
-'''
 
