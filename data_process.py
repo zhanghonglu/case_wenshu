@@ -439,16 +439,17 @@ if __name__ =='__main__':
     isRead = False
     for judge_i in judge_curor:
         count = count +1
-        print(count)
+        print("写入数量{}".format(count))
         case_no = judge_i["case_no"]
         if case_no is None:
             case_no = count
             #653414
             #338486
-        if count >= 17738:
+            #38427
+        if count >= 40947:
             isRead = True
         if(isRead):
-            print(judge_i)
+            # print(judge_i)
 
             print("写入" + str(case_no))
             case_content = judge_i["content"]
@@ -492,7 +493,6 @@ if __name__ =='__main__':
             penalty_addtion_politics = get_penalty_addtion_politics(content)
             civil_plaintiff = get_civil_plaintiff(content)
             public_prosecutor = get_public_prosecutor(content)
-            print(person_nation)
             if(public_prosecutor):
                 if(len(public_prosecutor)>40):
                     public_prosecutor =None
@@ -537,7 +537,7 @@ if __name__ =='__main__':
                                        civil_plaintiff = civil_plaintiff,public_prosecutor =public_prosecutor
                                        )
             case_info_item.save(force_insert= True)
-            print("插入{}".format(case_info_item))
+            # print("插入{}".format(str(case_info_item)))
             laws = get_apply_laws(content)
             for law in laws:
                 if (law[0] == ""):
@@ -599,6 +599,6 @@ if __name__ =='__main__':
                 apply_law = apply_laws(case=case_info_item, law_item=law[0], law_item_second=law[1],
                                        law_item_content=law_content, case_no = case_no)
                 apply_law.save(force_insert= True)
-                print("插入{}".format(apply_law))
+                # print("插入{}".format(apply_law))
                 
 
