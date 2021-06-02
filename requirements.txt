@@ -44,7 +44,7 @@ sqlparse==0.2.4
 tablib==2.0.0
 toml==0.10.1
 tqdm==4.48.0
-urllib3==1.25.9
+urllib3==1.26.5
 xadmin==0.6.1
 xlrd==1.2.0
 XlsxWriter==1.2.8
